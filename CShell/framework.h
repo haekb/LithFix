@@ -19,3 +19,11 @@ typedef DRESULT LTRESULT;
 #else
 #include <iltclient.h>
 #endif
+
+// GetVarValueFloat keeps returning -nan(ind)
+struct FloatVar {
+	char unknown[16];
+	unsigned char* commandName;
+	unsigned char* strValue; // ?? Looks like it
+	float value;
+};

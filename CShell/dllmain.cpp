@@ -89,8 +89,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		g_pDetourFunctions = new DetourFunctions();
 		g_pProxyFunctions = new ProxyFunctions();
 
-
-
 		HMODULE hLib;
 
 		// Load the real dll file. Should be in the game's root

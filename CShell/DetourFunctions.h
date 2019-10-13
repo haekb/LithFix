@@ -25,6 +25,8 @@ public:
 	ILTClient* m_pLTClient = NULL;
 	IClientShell* m_pClientShell = NULL;
 
+	bool m_bWindowedMode;
+
 protected:
 	bool m_bDetourTransactionOngoing;
 	bool m_bSetWindowPosOngoing;

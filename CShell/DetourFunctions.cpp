@@ -17,6 +17,8 @@ DetourFunctions::DetourFunctions()
 	m_pGetClientShellFunctions = NULL;
 	m_pSetWindowPos = NULL;
 	m_bSetWindowPosOngoing = false;
+
+	m_bWindowedMode = false;
 }
 
 DetourFunctions::~DetourFunctions()
@@ -99,20 +101,35 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 
 	m_bSetWindowPosOngoing = true;
 
+	// Minor hack, there's a function pointer mismatch with our headers and `GetVarValueFloat`
+	// So I reversed engineered the structure. Ezpz.
+	HCONSOLEVAR hVar = m_pLTClient->GetConsoleVar("Windowed");
+
+	if (hVar) {
+		FloatVar* fVal = (FloatVar*)hVar;
+		m_bWindowedMode = (bool)fVal->value;
+	}
+
+
 	RECT rect;
 
-	GetWindowRect(GetDesktopWindow(), &rect);
+	GetClientRect(GetDesktopWindow(), &rect);
 
 	int mX = rect.right / 2;
 	int mY = rect.bottom / 2;
 
 	mX -= cx / 2;
 	mY -= cy / 2;
+
+	// Adjust for windowed borders.
+	if (m_bWindowedMode) {
+		cx -= 16;
+		cy -= 39;
+	}
 	
 	SDL_SetWindowSize(g_hSDLWindow, cx, cy);
 
 	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, mX, mY, cx, cy, uFlags);
-
 
 	m_bSetWindowPosOngoing = false;
 
