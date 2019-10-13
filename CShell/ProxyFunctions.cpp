@@ -87,43 +87,7 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 {
 	POINT lpPoint;
 	int deltaX = 0, deltaY = 0;
-#if 0
 
-	if (!g_bCalculatedCentre)
-	{
-		RECT rect;
-		GetWindowRect(GetFocus(), &rect);
-		g_iCentreX = (rect.left + rect.right) / 2;
-		g_iCentreY = (rect.top + rect.bottom) / 2;
-		g_bCalculatedCentre = true;
-	}
-
-	POINT pt;
-
-	GetCursorPos(&pt);
-
-	if (g_bCenterCursor) {
-		//SetCursorPos(g_iCentreX, g_iCentreY);
-	}
-
-	LAST = NOW;
-	NOW = SDL_GetPerformanceCounter();
-
-	deltaTime = (double)((NOW - LAST) * 1000 / (double)SDL_GetPerformanceFrequency());
-
-	currentFrameTime += deltaTime;
-
-	float nMouseSensitivity = 1.0f;//GetConsoleFloat("MouseSensitivity", 1.0f);
-	float nScale = 0.00125f + ((float)nMouseSensitivity * 0.001125f);
-
-
-	offsets[0] = (float)((int)pt.x - g_iPreviousMouseX) * nScale;
-	offsets[1] = -((float)((int)pt.y - g_iPreviousMouseY) * nScale);
-	offsets[2] = 0;
-
-	g_iPreviousMouseX = pt.x;
-	g_iPreviousMouseY = pt.y;
-#else
 	SDL_PumpEvents();
 
 	// Firstly, we need a point of reference.
@@ -147,8 +111,6 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 
 	m_iPreviousMouseX = m_iCurrentMouseX;
 	m_iPreviousMouseY = m_iCurrentMouseY;
-
-#endif
 }
 
 LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
