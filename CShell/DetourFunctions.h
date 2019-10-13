@@ -12,23 +12,11 @@ public:
 	DetourFunctions();
 	~DetourFunctions();
 
-	// Some helper functions
-	bool StartTransaction();
-	bool CommitTransaction();
-	template <typename T>
-	bool AttachFunction(T* pRealPtr, T* pProxyPtr);
-	bool DetachFunction(void* pRealPtr, void* pProxyPtr);
-
 	// Proxy Functions
 	void GetClientShellFunctions(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete);
 	BOOL SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags);
 
 	IClientShell* CreateClientShell(ILTClient* pClientDE);
-
-
-	//void(__stdcall* GetClientShellFunctions)(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete);
-	
-
 
 	CreateClientShellFn* m_pCreateClientShell;
 	GetClientShellFunctionsFn* m_pGetClientShellFunctions;

@@ -16,6 +16,7 @@ ProxyFunctions::ProxyFunctions()
 	m_iPreviousMouseX = 0;
 	m_iPreviousMouseY = 0;
 
+	// This is the lowest "Scale" in the autoexec.cfg
 	m_fMouseSensitivity = 0.001125f;
 
 	m_lNextUpdate = 1L;
@@ -138,9 +139,6 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 	m_iCurrentMouseX += deltaX;
 	m_iCurrentMouseY += deltaY;
 
-	// TODO: Clean up, Code is from GameSettings.
-	//float nMouseSensitivity = 1.0f;
-	
 	float nScale = m_fMouseSensitivity + (1.0f * m_fMouseSensitivity);
 
 	offsets[0] = (float)(m_iCurrentMouseX - m_iPreviousMouseX) * nScale;

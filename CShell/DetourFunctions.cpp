@@ -8,7 +8,6 @@
 extern SDL_Window* g_hSDLWindow;
 
 // Mimicing regions
-//#define HELPERS
 #define PROXY
 
 DetourFunctions::DetourFunctions()
@@ -30,57 +29,6 @@ DetourFunctions::~DetourFunctions()
 	DetourTransactionCommit();
 }
 
-//
-// Helper functions
-// FIXME: Figure out template nonsense
-//
-#ifdef HELPERS
-bool DetourFunctions::StartTransaction()
-{
-	if (!m_bDetourTransactionOngoing) {
-		DetourRestoreAfterWith();
-		DetourTransactionBegin();
-
-		m_bDetourTransactionOngoing = true;
-	}
-
-	return true;
-}
-
-bool DetourFunctions::CommitTransaction()
-{
-	// Nothing to commit!
-	if (!m_bDetourTransactionOngoing) {
-		return false;
-	}
-
-	DetourTransactionCommit();
-
-	m_bDetourTransactionOngoing = false;
-
-	return true;
-}
-
-template <typename T>
-bool DetourFunctions::AttachFunction(T* pRealPtr, T* pProxyPtr)
-{
-	if (!m_bDetourTransactionOngoing) {
-		StartTransaction();
-	}
-
-	DetourUpdateThread(GetCurrentThread());
-
-	DetourAttach(&(PVOID&)pRealPtr, pProxyPtr);
-
-	return true;
-}
-
-bool DetourFunctions::DetachFunction(void* pRealPtr, void* pProxyPtr)
-{
-	return false;
-}
-#endif
-
 // 
 // Detour Functions
 //
@@ -91,7 +39,9 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 	((GetClientShellFunctionsFn)m_pGetClientShellFunctions)(pCreate, pDelete);
 
 	g_pDetourFunctions->m_pCreateClientShell = (CreateClientShellFn*)*pCreate;
-#ifndef HELPERS
+
+	// Replace some functions with our own!
+	// df_* functions are redirect functions that point to our class function
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
@@ -100,11 +50,6 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 	DetourAttach(&(PVOID&)m_pSetWindowPos, df_SetWindowPos);
 
 	DetourTransactionCommit();
-#else
-	StartTransaction();
-	AttachFunction<CreateClientShellFn*>(m_pCreateClientShell, df_CreateClientShell);
-	CommitTransaction();
-#endif
 }
 
 IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)

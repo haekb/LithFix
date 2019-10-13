@@ -37,14 +37,7 @@ FARPROC SetInstanceHandle;
 // FIXME: This is needed for the exports.
 void _GetClientShellFunctions(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete)
 {
-
-	if (!g_pDetourFunctions) {
-		__debugbreak();
-	}
-
 	g_pDetourFunctions->GetClientShellFunctions(pCreate, pDelete);
-
-	//df_GetClientShellFunctions(pCreate, pDelete);
 }
 
 __declspec(naked) void _GetClientShellVersion() { 
@@ -79,46 +72,42 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		g_SDLLogFile << "";
 		g_SDLLogFile.close();
 #endif
-
+		// Setup the logging function
 		SDL_LogSetOutputFunction(&SDLLog, NULL);
-
-		// Raw input has some troubles, so let's use the NOLF2M approach!
-		//SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
-
 
 		SDL_Log("LITHFIX Beta 1");
 		SDL_Log("Hello world, Let's get going!");
 
-		//g_hSDLWindow = SDL_CreateWindow("Hidden", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 960, 0);
+		// Grab the hWND and turn it into a SDL_Window
 		g_hSDLWindow = SDL_CreateWindowFrom(GetFocus());
+
+		// TODO: Throw an error?
+		if (!g_hSDLWindow) {
+			SDL_Quit();
+		}
 
 		g_pDetourFunctions = new DetourFunctions();
 		g_pProxyFunctions = new ProxyFunctions();
 
 
-		if (!g_hSDLWindow) {
-			//ASSERT(1);
-			SDL_Quit();
-		}
-
-		//SDL_SetWindowSize(g_hSDLWindow, 1280, 960);
 
 		HMODULE hLib;
+
+		// Load the real dll file. Should be in the game's root
+		// TODO: Make configurable
 		hLib = LoadLibrary("./CShellReal.dll");
 
 		if (!hLib) {
 			return FALSE;
 		}
 
+		// Send the SetWindowPos pointer to our detour class
 		g_pDetourFunctions->m_pSetWindowPos = (SetWindowPosFn*)SetWindowPos;
 
-		// Send the GetClientShellFunctions to our detour class.
+		// Send the GetClientShellFunctions pointer to our detour class
 		g_pDetourFunctions->m_pGetClientShellFunctions = (GetClientShellFunctionsFn*)GetProcAddress(hLib, "GetClientShellFunctions");
-
-		//GetClientShellFunctionsPtr = GetProcAddress(hLib, "GetClientShellFunctions");
 		GetClientShellVersion = GetProcAddress(hLib, "GetClientShellVersion");
 		SetInstanceHandle = GetProcAddress(hLib, "SetInstanceHandle");
-
 
 		break;
 	}
@@ -126,12 +115,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_THREAD_DETACH:
 		break;
     case DLL_PROCESS_DETACH:
-		/*
-		DetourTransactionBegin();
-		DetourUpdateThread(GetCurrentThread());
-		//DetourDetach(&(PVOID&)TrueSleep, TimedSleep);
-		DetourTransactionCommit();
-		*/
         break;
     }
     return TRUE;
