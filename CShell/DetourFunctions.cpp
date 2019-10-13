@@ -68,6 +68,7 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 #endif
 
 	SDL_Log("-- Hooking GetAxisOffsets Engine: <%p> Detoured: <%p>", m_pLTClient->GetAxisOffsets, pf_GetAxisOffsets);
+	g_pProxyFunctions->m_pGetAxisOffsets = m_pLTClient->GetAxisOffsets;
 	m_pLTClient->GetAxisOffsets = pf_GetAxisOffsets;
 	SDL_Log("-- Hooked GetAxisOffsets");
 

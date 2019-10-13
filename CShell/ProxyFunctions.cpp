@@ -31,6 +31,10 @@ ProxyFunctions::ProxyFunctions()
 
 	m_lFrametime = (m_lTimerFrequency.QuadPart / 60);
 
+#ifdef LITH_AVP2
+	m_bGetAxisOffsetCalledThisFrame = false;
+	m_fOffsets[0] = m_fOffsets[1] = m_fOffsets[2] = 0;
+#endif
 }
 
 ProxyFunctions::~ProxyFunctions()
@@ -85,6 +89,19 @@ void ProxyFunctions::RunConsoleString(char* pString)
 
 void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 {
+#ifdef LITH_AVP2
+	// AVP2 seems to call GetAxisOffsets twice a frame
+	// so use the cached results for the second call
+	if (m_bGetAxisOffsetCalledThisFrame) {
+		offsets[0] = m_fOffsets[0];
+		offsets[1] = m_fOffsets[1];
+		offsets[2] = m_fOffsets[2];
+
+		m_bGetAxisOffsetCalledThisFrame = false;
+		return;
+	}
+#endif
+
 	POINT lpPoint;
 	int deltaX = 0, deltaY = 0;
 
@@ -106,11 +123,20 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 	float nScale = m_fMouseSensitivity + (1.0f * m_fMouseSensitivity);
 
 	offsets[0] = (float)(m_iCurrentMouseX - m_iPreviousMouseX) * nScale;
-	offsets[1] = (float)(m_iCurrentMouseY - m_iPreviousMouseY) * nScale;
-	offsets[2] = 0;
+	offsets[1] = (float)(m_iCurrentMouseY - m_iPreviousMouseY) * (nScale*2);
+	offsets[2] = 0.0f;
 
 	m_iPreviousMouseX = m_iCurrentMouseX;
 	m_iPreviousMouseY = m_iCurrentMouseY;
+
+#ifdef LITH_AVP2
+	// Cache the results so it can be used again this frame
+	m_fOffsets[0] = offsets[0];
+	m_fOffsets[1] = offsets[1];
+	m_fOffsets[2] = offsets[2];
+
+	m_bGetAxisOffsetCalledThisFrame = true;
+#endif
 }
 
 LTRESULT ProxyFunctions::FlipScreen(uint32 flags)

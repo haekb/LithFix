@@ -16,8 +16,9 @@ public:
 	LTRESULT FlipScreen(uint32 flags);
 
 	// Original function pointers
-	void (*m_pRunConsoleString)(char* pString) = NULL;
+	void     (*m_pRunConsoleString)(char* pString) = NULL;
 	LTRESULT (*m_pFlipScreen)(uint32 flags) = NULL;
+	void	 (*m_pGetAxisOffsets)(LTFLOAT* offsets) = NULL;
 
 protected:
 	// Actual variables
@@ -28,6 +29,12 @@ protected:
 	int  m_iPreviousMouseY;
 
 	float m_fMouseSensitivity;
+
+#ifdef LITH_AVP2
+	// AVP2 calls GetAxisOffsets twice in the same frame...
+	bool m_bGetAxisOffsetCalledThisFrame;
+	float m_fOffsets[3];
+#endif
 
 	// Framerate limiting stuff
 	LONGLONG m_lNextUpdate;
