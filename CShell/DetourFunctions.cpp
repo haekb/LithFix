@@ -16,6 +16,7 @@ DetourFunctions::DetourFunctions()
 	m_pCreateClientShell = NULL;
 	m_pGetClientShellFunctions = NULL;
 	m_pSetWindowPos = NULL;
+	m_bSetWindowPosOngoing = false;
 }
 
 DetourFunctions::~DetourFunctions()
@@ -120,10 +121,28 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	return ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
 }
 
+// Override SetWindowPos so we can centre the window in windowed mode
 BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags)
 {
+	if (m_bSetWindowPosOngoing) {
+		return TRUE;
+	}
 
-	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+	m_bSetWindowPosOngoing = true;
+
+	RECT rect;
+
+	GetWindowRect(GetDesktopWindow(), &rect);
+
+	int mX = rect.right / 2;
+	int mY = rect.bottom / 2;
+
+	mX -= cx / 2;
+	mY -= cy / 2;
+	
+	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, mX, mY, cx, cy, uFlags);
+
+	m_bSetWindowPosOngoing = false;
 
 	return ret;
 }
