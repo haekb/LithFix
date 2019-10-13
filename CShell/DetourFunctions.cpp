@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "ProxyFunctions.h"
 
+
 extern SDL_Window* g_hSDLWindow;
 
 // Mimicing regions
@@ -21,6 +22,12 @@ DetourFunctions::DetourFunctions()
 
 DetourFunctions::~DetourFunctions()
 {
+	// Detach!
+	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+	DetourDetach(&(PVOID&)m_pCreateClientShell, df_CreateClientShell);
+	DetourDetach(&(PVOID&)m_pSetWindowPos, df_SetWindowPos);
+	DetourTransactionCommit();
 }
 
 //
@@ -83,15 +90,6 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 	// Call the real GetClientShellFunctions
 	((GetClientShellFunctionsFn)m_pGetClientShellFunctions)(pCreate, pDelete);
 
-	
-	if (g_hSDLWindow) {
-		RECT rect;
-		GetWindowRect(GetFocus(), &rect);
-
-		SDL_SetWindowPosition(g_hSDLWindow, rect.left, rect.top);
-	}
-	
-
 	g_pDetourFunctions->m_pCreateClientShell = (CreateClientShellFn*)*pCreate;
 #ifndef HELPERS
 	DetourTransactionBegin();
@@ -111,14 +109,40 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 
 IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 {
+	SDL_Log(">> Running Detoured CreateClientShell");
+
 	m_pLTClient = pClientDE;
 
-	m_pLTClient->GetAxisOffsets = pf_GetAxisOffsets;
+	// Shogo has no mouse input on menus
+#ifdef LITH_SHOGO
+	if (g_hSDLWindow) {
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+#endif
 
+	SDL_Log("-- Hooking GetAxisOffsets Engine: <%p> Detoured: <%p>", m_pLTClient->GetAxisOffsets, pf_GetAxisOffsets);
+	m_pLTClient->GetAxisOffsets = pf_GetAxisOffsets;
+	SDL_Log("-- Hooked GetAxisOffsets");
+
+	SDL_Log("-- Hooking RunConsoleString Engine: <%p> Detoured: <%p>", m_pLTClient->RunConsoleString, pf_RunConsoleString);
 	g_pProxyFunctions->m_pRunConsoleString = m_pLTClient->RunConsoleString;
 	m_pLTClient->RunConsoleString = pf_RunConsoleString;
+	SDL_Log("-- Hooked RunConsoleString");
 
-	return ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
+	SDL_Log("-- Hooking FlipScreen Engine: <%p> Detoured: <%p>", m_pLTClient->FlipScreen, pf_FlipScreen);
+	g_pProxyFunctions->m_pFlipScreen = m_pLTClient->FlipScreen;
+	m_pLTClient->FlipScreen = pf_FlipScreen;
+	SDL_Log("-- Hooked FlipScreen");
+
+	SDL_Log(">> Finished Detoured CreateClientShell");
+
+	IClientShell* pClientShell = ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
+
+	// TODO: Cast to CGameClientShell!
+	//m_pClientShell = (CGameClientShell)pClientShell;
+	m_pClientShell = pClientShell;
+
+	return pClientShell;
 }
 
 // Override SetWindowPos so we can centre the window in windowed mode
@@ -140,7 +164,10 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 	mX -= cx / 2;
 	mY -= cy / 2;
 	
+	SDL_SetWindowSize(g_hSDLWindow, cx, cy);
+
 	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, mX, mY, cx, cy, uFlags);
+
 
 	m_bSetWindowPosOngoing = false;
 
