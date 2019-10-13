@@ -1,6 +1,8 @@
 #pragma once
+#include "framework.h"
 #include <iltclient.h>
 typedef void (*GetClientShellFunctionsFn)(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete);
+typedef BOOL (*SetWindowPosFn)(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags);
 /// Detour Functions Class
 /// ---------------------
 /// Contains functions to be used with the detours library
@@ -20,6 +22,7 @@ public:
 	// Proxy Functions
 	void GetClientShellFunctions(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete);
 	IClientShell* CreateClientShell(ILTClient* pClientDE);
+	BOOL SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags);
 
 
 	//void(__stdcall* GetClientShellFunctions)(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete);
@@ -28,13 +31,12 @@ public:
 
 	CreateClientShellFn* m_pCreateClientShell;
 	GetClientShellFunctionsFn* m_pGetClientShellFunctions;
-
+	SetWindowPosFn* m_pSetWindowPos;
 
 protected:
 	bool m_bDetourTransactionOngoing;
 
-	// FIX
-	ILTClient* g_pLTClient = NULL;
+	ILTClient* m_pLTClient = NULL;
 
 #if 1
 
@@ -48,4 +50,15 @@ private:
 extern DetourFunctions* g_pDetourFunctions;
 
 inline void df_GetClientShellFunctions(CreateClientShellFn* pCreate, DeleteClientShellFn* pDelete) { g_pDetourFunctions->GetClientShellFunctions(pCreate, pDelete); };
-//IClientShell* df_CreateClientShell(ILTClient* pClientDE) { return g_pDetourFunctions->CreateClientShell(pClientDE); };
+inline IClientShell* df_CreateClientShell(ILTClient* pClientDE) { return g_pDetourFunctions->CreateClientShell(pClientDE); };
+inline BOOL df_SetWindowPos(
+	HWND hWnd,
+	HWND hWndInsertAfter,
+	int  X,
+	int  Y,
+	int  cx,
+	int  cy,
+	UINT uFlags
+) {
+	return g_pDetourFunctions->SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+}

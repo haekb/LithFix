@@ -10,13 +10,12 @@ extern SDL_Window* g_hSDLWindow;
 //#define HELPERS
 #define PROXY
 
-IClientShell* df_CreateClientShell(ILTClient* pClientDE) { return g_pDetourFunctions->CreateClientShell(pClientDE); };
-
 DetourFunctions::DetourFunctions()
 {
 	m_bDetourTransactionOngoing = false;
 	m_pCreateClientShell = NULL;
 	m_pGetClientShellFunctions = NULL;
+	m_pSetWindowPos = NULL;
 }
 
 DetourFunctions::~DetourFunctions()
@@ -25,6 +24,7 @@ DetourFunctions::~DetourFunctions()
 
 //
 // Helper functions
+// FIXME: Figure out template nonsense
 //
 #ifdef HELPERS
 bool DetourFunctions::StartTransaction()
@@ -82,20 +82,23 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 	// Call the real GetClientShellFunctions
 	((GetClientShellFunctionsFn)m_pGetClientShellFunctions)(pCreate, pDelete);
 
-	/*
+	
 	if (g_hSDLWindow) {
 		RECT rect;
 		GetWindowRect(GetFocus(), &rect);
 
 		SDL_SetWindowPosition(g_hSDLWindow, rect.left, rect.top);
 	}
-	*/
+	
 
 	g_pDetourFunctions->m_pCreateClientShell = (CreateClientShellFn*)*pCreate;
-#if 1
+#ifndef HELPERS
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
-	auto err = DetourAttach(&(PVOID&)m_pCreateClientShell, df_CreateClientShell);
+
+	// Attach some functions!
+	DetourAttach(&(PVOID&)m_pCreateClientShell, df_CreateClientShell);
+	DetourAttach(&(PVOID&)m_pSetWindowPos, df_SetWindowPos);
 
 	DetourTransactionCommit();
 #else
@@ -107,14 +110,22 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 
 IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 {
-	g_pLTClient = pClientDE;
+	m_pLTClient = pClientDE;
 
-	g_pLTClient->GetAxisOffsets = pf_GetAxisOffsets;
+	m_pLTClient->GetAxisOffsets = pf_GetAxisOffsets;
 
-	g_pProxyFunctions->m_pRunConsoleString = g_pLTClient->RunConsoleString;
-	g_pLTClient->RunConsoleString = pf_RunConsoleString;
+	g_pProxyFunctions->m_pRunConsoleString = m_pLTClient->RunConsoleString;
+	m_pLTClient->RunConsoleString = pf_RunConsoleString;
 
 	return ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
+}
+
+BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags)
+{
+
+	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+
+	return ret;
 }
 
 #endif
