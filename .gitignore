@@ -334,4 +334,5 @@ paket-files/
 *.sln.iml
 
 # Additional
-LithTech
+# Since AVP2 still has a thriving community, don't include those mocked up headers.
+LithTech/AVP2
