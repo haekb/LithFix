@@ -1,0 +1,6 @@
+LIBRARY CSHELL
+
+EXPORTS
+GetClientShellFunctions = _GetClientShellFunctions @1
+GetClientShellVersion = _GetClientShellVersion @2
+SetInstanceHandle = _SetInstanceHandle @3
