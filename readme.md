@@ -6,8 +6,6 @@ Remove any custom rez files you have enabled, and add in "-rez lithfix" to your 
 
 This should be speedrunner friendly, as it won't change any RNG/randomness/broken things that break as you expect them.
 
----
-
 ## NOLF - REVIVAL RELEASE
 
 This uses the `WidescreenGOTY` patch as a base, and basically replaces lithtech.exe code to fix things like mouse look, and add a framerate limiter.
@@ -16,13 +14,13 @@ This uses the `WidescreenGOTY` patch as a base, and basically replaces lithtech.
 
 This uses the base Shogo DLLs as a base. Fixes up mouse look, and adds a frame limiter.
 
----
+## AVP2 Primal Hunt AVP2AIO
+
+This uses the base AVP2PH DLLs as a base. Fixes up mouse look, and adds a frame limiter. Due to how active the AVP2 multiplayer community is, the headers aren't released in this repo. Feel free to send PRs for new functionality!
 
 ## Getting it working
 
 This proxy dll loads up a `CShellReal.dll` file in the main game directory, so place your real lithtech CShell.dll in place of that file, then compile the code and place the newly compiled `CShell.dll` in a folder of your choice under the game's directory. Then run the game with the extra parameter `-rez <folder name you chose>` (No .rez at the end!)
-
----
 
 Enjoy!
 
