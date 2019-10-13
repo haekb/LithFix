@@ -15,6 +15,8 @@ Global
 		Debug - SHOGO|x86 = Debug - SHOGO|x86
 		Release - NOLF|x64 = Release - NOLF|x64
 		Release - NOLF|x86 = Release - NOLF|x86
+		Release - SHOGO|x64 = Release - SHOGO|x64
+		Release - SHOGO|x86 = Release - SHOGO|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -35,6 +37,10 @@ Global
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - NOLF|x64.Build.0 = Release - NOLF|x64
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - NOLF|x86.ActiveCfg = Release - NOLF|Win32
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - NOLF|x86.Build.0 = Release - NOLF|Win32
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - SHOGO|x64.ActiveCfg = Release - SHOGO|x64
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - SHOGO|x64.Build.0 = Release - SHOGO|x64
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - SHOGO|x86.ActiveCfg = Release - SHOGO|Win32
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release - SHOGO|x86.Build.0 = Release - SHOGO|Win32
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release|x64.ActiveCfg = Release|x64
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release|x64.Build.0 = Release|x64
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Release|x86.ActiveCfg = Release|Win32
