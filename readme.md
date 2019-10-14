@@ -6,6 +6,13 @@ Remove any custom rez files you have enabled, and add in "-rez lithfix" to your 
 
 This should be speedrunner friendly, as it won't change any RNG/randomness/broken things that break as you expect them.
 
+## Settings
+
+The following are customizable settings that can be added to your `autoexec.cfg`!
+
+ - `lf_max_fps` - Set the max framerate for the frame limiter. (Defaults to 60)
+ - `lf_window_fix` - Enable (1) or disable (0) clipping of the game window in windowed mode. (Defaults to 1)
+
 ## NOLF - REVIVAL RELEASE
 
 This uses the `WidescreenGOTY` patch as a base, and basically replaces lithtech.exe code to fix things like mouse look, and add a framerate limiter.
