@@ -25,13 +25,17 @@ public:
 	ILTClient* m_pLTClient = NULL;
 	IClientShell* m_pClientShell = NULL;
 
+	// Hack: Read our config in
+	void FirstRun();
+
 	bool m_bWindowedMode;
 
 protected:
 	bool m_bDetourTransactionOngoing;
 	bool m_bSetWindowPosOngoing;
 
-	
+	// Hack: Allows us to init our config
+	bool m_bFirstRun;
 
 #if 1
 

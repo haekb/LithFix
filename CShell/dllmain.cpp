@@ -8,6 +8,8 @@
 
 SDL_Window* g_hSDLWindow = NULL;
 
+Config g_sConfig;
+
 #include "DetourFunctions.h"
 #include "ProxyFunctions.h"
 
@@ -65,6 +67,9 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_PROCESS_ATTACH:
 	{
 		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+
+		// Init Config -- See Config.h
+		InitConfig(g_sConfig);
 
 		// If we're not debug, clear the debug log
 #ifdef NDEBUG

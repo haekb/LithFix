@@ -1,6 +1,8 @@
 #pragma once
 #include "framework.h"
 
+extern Config g_sConfig;
+
 /// Proxy Functions Class
 /// ---------------------
 /// Contains functions that replace engine level functions from g_pLTClient
@@ -19,6 +21,8 @@ public:
 	void     (*m_pRunConsoleString)(char* pString) = NULL;
 	LTRESULT (*m_pFlipScreen)(uint32 flags) = NULL;
 	void	 (*m_pGetAxisOffsets)(LTFLOAT* offsets) = NULL;
+
+	void SetMaxFramerate() { if (!m_bLockFramerate) return; m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate); }
 
 protected:
 	// Actual variables

@@ -3,6 +3,8 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
 #include <windows.h>
+#include "Helpers.h"
+#include "Config.h"
 
 #ifdef LITH_SHOGO
 #include <de_client.h>

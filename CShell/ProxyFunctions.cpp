@@ -3,10 +3,12 @@
 #include <string>
 #include <regex>
 #include <SDL.h>
+#include <vector>
 
 
 extern SDL_Window* g_hSDLWindow;
 extern DetourFunctions* g_pDetourFunctions;
+extern Config g_sConfig;
 
 ProxyFunctions::ProxyFunctions()
 {
@@ -29,7 +31,7 @@ ProxyFunctions::ProxyFunctions()
 		m_bLockFramerate = false;
 	}
 
-	m_lFrametime = (m_lTimerFrequency.QuadPart / 60);
+	m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate);
 
 #ifdef LITH_AVP2
 	m_bGetAxisOffsetCalledThisFrame = false;
@@ -97,7 +99,7 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 		offsets[1] = m_fOffsets[1];
 		offsets[2] = m_fOffsets[2];
 
-		m_bGetAxisOffsetCalledThisFrame = false;
+		
 		return;
 	}
 #endif
@@ -156,6 +158,11 @@ LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
 			}
 		}
 	}
+
+#ifdef LITH_AVP2
+	// Okay we've hit the end of the frame, reset our inputs.
+	m_bGetAxisOffsetCalledThisFrame = false;
+#endif
 
 	return m_pFlipScreen(flags);
 }
