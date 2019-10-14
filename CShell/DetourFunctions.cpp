@@ -6,6 +6,7 @@
 
 
 extern SDL_Window* g_hSDLWindow;
+extern Config g_sConfig;
 
 // Mimicing regions
 #define PROXY
@@ -19,6 +20,7 @@ DetourFunctions::DetourFunctions()
 	m_bSetWindowPosOngoing = false;
 
 	m_bWindowedMode = false;
+	m_bFirstRun = true;
 }
 
 DetourFunctions::~DetourFunctions()
@@ -90,7 +92,31 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	//m_pClientShell = (CGameClientShell)pClientShell;
 	m_pClientShell = pClientShell;
 
+
+
+
 	return pClientShell;
+}
+
+void DetourFunctions::FirstRun()
+{
+	auto hMaxFps = m_pLTClient->GetConsoleVar("lf_max_fps");
+	if (hMaxFps) {
+		FloatVar* fMaxFps = (FloatVar*)hMaxFps;
+		g_sConfig.fMaxFramerate = fMaxFps->value;
+		g_pProxyFunctions->SetMaxFramerate();
+	}
+	else {
+		g_sConfig.fMaxFramerate = 60.0f;
+		g_pProxyFunctions->SetMaxFramerate();
+	}
+
+	auto hWindowFix = m_pLTClient->GetConsoleVar("lf_window_fix");
+	if (hWindowFix) {
+		FloatVar* fWindowFix = (FloatVar*)hWindowFix;
+		g_sConfig.bWindowFix = fWindowFix->value == 0.0f ? false : true;
+	}
+
 }
 
 // Override SetWindowPos so we can centre the window in windowed mode
@@ -102,6 +128,13 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 
 	m_bSetWindowPosOngoing = true;
 
+	// HACK: Client is ready here to read in console variables,
+	// so let's do it! 
+	if (m_bFirstRun) {
+		FirstRun();
+		m_bFirstRun = false;
+	}
+
 	// Minor hack, there's a function pointer mismatch with our headers and `GetVarValueFloat`
 	// So I reversed engineered the structure. Ezpz.
 	HCONSOLEVAR hVar = m_pLTClient->GetConsoleVar("Windowed");
@@ -110,7 +143,6 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 		FloatVar* fVal = (FloatVar*)hVar;
 		m_bWindowedMode = (bool)fVal->value;
 	}
-
 
 	RECT rect;
 
@@ -123,14 +155,18 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 	mY -= cy / 2;
 
 	// Adjust for windowed borders.
-	if (m_bWindowedMode) {
+	if (g_sConfig.bWindowFix && m_bWindowedMode) {
 		cx -= 16;
 		cy -= 39;
 	}
 	
+	SDL_SetWindowFullscreen(g_hSDLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
 	SDL_SetWindowSize(g_hSDLWindow, cx, cy);
 
 	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, mX, mY, cx, cy, uFlags);
+
+
 
 	m_bSetWindowPosOngoing = false;
 

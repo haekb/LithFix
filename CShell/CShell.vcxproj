@@ -514,8 +514,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="DetourFunctions.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="ProxyFunctions.h" />
   </ItemGroup>
   <ItemGroup>
