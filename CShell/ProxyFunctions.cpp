@@ -42,7 +42,7 @@ ProxyFunctions::ProxyFunctions()
 ProxyFunctions::~ProxyFunctions()
 {
 	
-}
+}//77327009h
 
 void ProxyFunctions::RunConsoleString(char* pString)
 {
@@ -165,4 +165,14 @@ LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
 #endif
 
 	return m_pFlipScreen(flags);
+}
+
+LTRESULT ProxyFunctions::SetRenderMode(RMode* pMode)
+{
+	SDL_Log("SetRenderMode!");
+	auto test = true;
+
+	
+
+	return LTRESULT();
 }

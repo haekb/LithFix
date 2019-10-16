@@ -83,6 +83,11 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		SDL_Log("LITHFIX Beta 1");
 		SDL_Log("Hello world, Let's get going!");
 
+		TCHAR szExeFileName[MAX_PATH];
+		GetModuleFileName(NULL, szExeFileName, MAX_PATH);
+
+		SDL_Log("EXE NAME: <%s>", szExeFileName);
+
 		// Grab the hWND and turn it into a SDL_Window
 		g_hSDLWindow = SDL_CreateWindowFrom(GetFocus());
 

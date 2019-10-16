@@ -51,7 +51,9 @@ void DetourFunctions::GetClientShellFunctions(CreateClientShellFn* pCreate, Dele
 
 	// Attach some functions!
 	DetourAttach(&(PVOID&)m_pCreateClientShell, df_CreateClientShell);
+#ifndef LITH_SANITY
 	DetourAttach(&(PVOID&)m_pSetWindowPos, df_SetWindowPos);
+#endif
 
 	DetourTransactionCommit();
 }
@@ -69,6 +71,77 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	}
 #endif
 
+
+
+
+#ifdef LITH_SANITY
+
+#if 1
+	int* pIntLTClient = (int*)m_pLTClient;
+
+	int offset = offsetof(ILTClient, SetRenderMode);
+	int offset2 = offsetof(ILTClient, GetRenderModes);
+
+	int* test = (int*)m_pLTClient->SetRenderMode;
+	//0x024BED04+0x24C
+
+	//0x255EAD8+50h
+
+	//0x38A5064
+	int* RenderModePtr = pIntLTClient;//+72;//0x22C;//0x24;
+
+	//int* RenderModePtr = (int*)m_pLTClient->SetRenderMode;
+
+	SDL_Log("-- Hooking SetRenderMode Engine: <%p> Detoured: <%p>", RenderModePtr, pf_SetRenderMode);
+
+
+	RMode pMode;
+
+	RMode* RPTR = &pMode;
+
+	g_pProxyFunctions->m_pSetRenderMode = (SetRenderModeFn*)*RenderModePtr;
+
+	// TODO: clean up
+	int* t = (int*)RenderModePtr;
+	int off = 0x50;
+
+	int* ptr = (int*)((char*)t + off);
+
+
+#if 0
+	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+
+	int* t = (int*)RenderModePtr;
+	int off = 0x50;
+
+	int* ptr = (int*) ((char*)t + off);
+
+	//int* ptr = ((int*)RenderModePtr + 0x50);  //(int*) (*pIntLTClient + 0x50);
+
+	// Attach some functions!
+	DetourAttach(&(PVOID&)ptr, pf_SetRenderMode);
+	DetourTransactionCommit();
+#endif
+
+	// Put that function pointer into the pointer at ptr
+	*ptr = (int)pf_SetRenderMode;
+
+#else
+	int offset = offsetof(ILTClient, SetRenderMode);
+	SDL_Log("-- Hooking SetRenderMode Engine: <%p> Detoured: <%p>", m_pLTClient->SetRenderMode, pf_SetRenderMode);
+	g_pProxyFunctions->m_pSetRenderMode = m_pLTClient->SetRenderMode;
+	m_pLTClient->SetRenderMode = pf_SetRenderMode;
+	SDL_Log("-- Hooked SetRenderMode");
+#endif
+
+	//RenderModePtr = (int*)pf_SetRenderMode;
+	SDL_Log("-- Hooked SetRenderMode");
+
+	//RenderModePtr
+
+
+#else
 	SDL_Log("-- Hooking GetAxisOffsets Engine: <%p> Detoured: <%p>", m_pLTClient->GetAxisOffsets, pf_GetAxisOffsets);
 	g_pProxyFunctions->m_pGetAxisOffsets = m_pLTClient->GetAxisOffsets;
 	m_pLTClient->GetAxisOffsets = pf_GetAxisOffsets;
@@ -84,7 +157,17 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	m_pLTClient->FlipScreen = pf_FlipScreen;
 	SDL_Log("-- Hooked FlipScreen");
 
-	SDL_Log(">> Finished Detoured CreateClientShell");
+	SDL_Log("-- Hooking SetRenderMode Engine: <%p> Detoured: <%p>", m_pLTClient->SetRenderMode, pf_SetRenderMode);
+	g_pProxyFunctions->m_pSetRenderMode = m_pLTClient->SetRenderMode;
+	m_pLTClient->SetRenderMode = pf_SetRenderMode;
+	SDL_Log("-- Hooked SetRenderMode");
+#endif
+
+
+	//int* t = (int*)0x77327009;
+	//int* o = (int*)*t;
+
+
 
 	IClientShell* pClientShell = ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
 
@@ -94,7 +177,7 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 
 
 
-
+	SDL_Log(">> Finished Detoured CreateClientShell");
 	return pClientShell;
 }
 
@@ -131,7 +214,7 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 	// HACK: Client is ready here to read in console variables,
 	// so let's do it! 
 	if (m_bFirstRun) {
-		FirstRun();
+		//FirstRun();
 		m_bFirstRun = false;
 	}
 

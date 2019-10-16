@@ -6,7 +6,10 @@
 #include "Helpers.h"
 #include "Config.h"
 
-#ifdef LITH_SHOGO
+// Release Version Chart -- If I find it in the exe/dll, i'll throw it here.
+// Sanity - 25.1
+
+#if defined(LITH_SHOGO)
 #include <de_client.h>
 
 // Some stuff is named differently or not defined in the older lithtech games

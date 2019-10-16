@@ -1,7 +1,13 @@
 #pragma once
 #include "framework.h"
-
+#include <sdl.h>
 extern Config g_sConfig;
+
+#ifdef LITH_SANITY
+	// We don't have headers for Sanity, so we need to typedef this stuff
+	typedef LTRESULT (SetRenderModeFn)(RMode* pMode);
+
+#endif
 
 /// Proxy Functions Class
 /// ---------------------
@@ -16,11 +22,13 @@ public:
 	void RunConsoleString(char* pString);
 	void GetAxisOffsets(LTFLOAT* offsets);
 	LTRESULT FlipScreen(uint32 flags);
+	LTRESULT SetRenderMode(RMode* pMode);
 
 	// Original function pointers
 	void     (*m_pRunConsoleString)(char* pString) = NULL;
 	LTRESULT (*m_pFlipScreen)(uint32 flags) = NULL;
 	void	 (*m_pGetAxisOffsets)(LTFLOAT* offsets) = NULL;
+	LTRESULT(*m_pSetRenderMode)(RMode* pMode) = NULL;
 
 	void SetMaxFramerate() { if (!m_bLockFramerate) return; m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate); }
 
@@ -55,3 +63,4 @@ extern ProxyFunctions* g_pProxyFunctions;
 inline void pf_RunConsoleString(char* pString) { g_pProxyFunctions->RunConsoleString(pString); };
 inline void pf_GetAxisOffsets(LTFLOAT* offsets) { g_pProxyFunctions->GetAxisOffsets(offsets); };
 inline LTRESULT pf_FlipScreen(uint32 flags) { return g_pProxyFunctions->FlipScreen(flags); };
+inline LTRESULT pf_SetRenderMode(RMode* pMode) { SDL_Log("Git here"); return g_pProxyFunctions->SetRenderMode(pMode); };

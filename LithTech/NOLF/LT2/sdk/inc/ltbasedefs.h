@@ -341,6 +341,7 @@
 		RMode			*m_pNext;
 	};
 
+
 	// The ID of the description string contained in render DLLs.
 	#define RDLL_DESCRIPTION_STRINGID	5
 
