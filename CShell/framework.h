@@ -22,7 +22,29 @@ typedef float LTFLOAT;
 typedef unsigned long uint32;
 typedef DRESULT LTRESULT;
 #else
+// TODO: Make my own headers for Sanity
+#ifdef LITH_SANITY
+#define RMode RmodeNolf
+#endif
+
 #include <iltclient.h>
+
+#ifdef LITH_SANITY
+#undef RMode
+// Render modes are what are used to describe a video mode/video card.
+typedef struct RMode_t
+{
+	char			m_bHardware;
+
+	char			m_RenderDLL[200];		// What DLL this comes from.		
+	char			m_InternalName[100];	// This is what the DLLs use to identify a card.
+	char			m_Description[100];		// This is a 'friendly' string describing the card.
+
+	unsigned long	m_Width, m_Height, m_BitDepth;
+	struct RMode_t* m_pNext;
+} RMode;
+#endif
+
 #endif
 
 // GetVarValueFloat keeps returning -nan(ind)
