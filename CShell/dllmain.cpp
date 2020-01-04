@@ -16,6 +16,10 @@ Config g_sConfig;
 ProxyFunctions* g_pProxyFunctions = NULL;
 DetourFunctions* g_pDetourFunctions = NULL;
 
+// Use a distinct value so it's easier to find in memory!
+
+static int g_iLithFixVersion = 133717002; 
+
 #if 1
 // SDL Logging
 std::fstream g_SDLLogFile;
@@ -80,13 +84,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		// Setup the logging function
 		SDL_LogSetOutputFunction(&SDLLog, NULL);
 
-		SDL_Log("LITHFIX Beta 1");
+		SDL_Log("LITHFIX Beta 2");
 		SDL_Log("Hello world, Let's get going!");
 
 		TCHAR szExeFileName[MAX_PATH];
 		GetModuleFileName(NULL, szExeFileName, MAX_PATH);
 
 		SDL_Log("EXE NAME: <%s>", szExeFileName);
+		SDL_Log("Special Version Value: <%d>", g_iLithFixVersion);
 
 		// Grab the hWND and turn it into a SDL_Window
 		g_hSDLWindow = SDL_CreateWindowFrom(GetFocus());

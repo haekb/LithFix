@@ -157,10 +157,18 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	m_pLTClient->FlipScreen = pf_FlipScreen;
 	SDL_Log("-- Hooked FlipScreen");
 
+	//g_pLTClient->SetInputState
+	SDL_Log("-- Hooking SetInputState Engine: <%p> Detoured: <%p>", m_pLTClient->SetInputState, pf_SetInputState);
+	g_pProxyFunctions->m_pSetInputState = m_pLTClient->SetInputState;
+	m_pLTClient->SetInputState = pf_SetInputState;
+	SDL_Log("-- Hooked SetInputState");
+
+	/*
 	SDL_Log("-- Hooking SetRenderMode Engine: <%p> Detoured: <%p>", m_pLTClient->SetRenderMode, pf_SetRenderMode);
 	g_pProxyFunctions->m_pSetRenderMode = m_pLTClient->SetRenderMode;
 	m_pLTClient->SetRenderMode = pf_SetRenderMode;
 	SDL_Log("-- Hooked SetRenderMode");
+	*/
 #endif
 
 
@@ -220,7 +228,7 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 
 	// Minor hack, there's a function pointer mismatch with our headers and `GetVarValueFloat`
 	// So I reversed engineered the structure. Ezpz.
-	HCONSOLEVAR hVar = m_pLTClient->GetConsoleVar("Windowed");
+	HCONSOLEVAR hVar = m_pLTClient->GetConsoleVar("windowed");
 
 	if (hVar) {
 		FloatVar* fVal = (FloatVar*)hVar;
@@ -239,8 +247,8 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 
 	// Adjust for windowed borders.
 	if (g_sConfig.bWindowFix && m_bWindowedMode) {
-		cx -= 16;
-		cy -= 39;
+	//	cx -= 16;
+	//	cy -= 39;
 	}
 	
 	SDL_SetWindowFullscreen(g_hSDLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);

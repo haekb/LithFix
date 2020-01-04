@@ -21,14 +21,17 @@ public:
 	// Proxy functions
 	void RunConsoleString(char* pString);
 	void GetAxisOffsets(LTFLOAT* offsets);
+	void SetInputState(LTBOOL bOn);
 	LTRESULT FlipScreen(uint32 flags);
 	LTRESULT SetRenderMode(RMode* pMode);
+	
 
 	// Original function pointers
 	void     (*m_pRunConsoleString)(char* pString) = NULL;
 	LTRESULT (*m_pFlipScreen)(uint32 flags) = NULL;
 	void	 (*m_pGetAxisOffsets)(LTFLOAT* offsets) = NULL;
-	LTRESULT(*m_pSetRenderMode)(RMode* pMode) = NULL;
+	LTRESULT (*m_pSetRenderMode)(RMode* pMode) = NULL;
+	void	 (*m_pSetInputState)(LTBOOL bOn) = NULL;
 
 	void SetMaxFramerate() { if (!m_bLockFramerate) return; m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate); }
 
@@ -39,14 +42,13 @@ protected:
 	int  m_iCurrentMouseY;
 	int  m_iPreviousMouseX;
 	int  m_iPreviousMouseY;
+	bool m_bAllowMouse;
 
 	float m_fMouseSensitivity;
 
-#ifdef LITH_AVP2
 	// AVP2 calls GetAxisOffsets twice in the same frame...
 	bool m_bGetAxisOffsetCalledThisFrame;
 	float m_fOffsets[3];
-#endif
 
 	// Framerate limiting stuff
 	LONGLONG m_lNextUpdate;
@@ -62,5 +64,6 @@ extern ProxyFunctions* g_pProxyFunctions;
 
 inline void pf_RunConsoleString(char* pString) { g_pProxyFunctions->RunConsoleString(pString); };
 inline void pf_GetAxisOffsets(LTFLOAT* offsets) { g_pProxyFunctions->GetAxisOffsets(offsets); };
+inline void pf_SetInputState(LTBOOL bOn) { g_pProxyFunctions->m_pSetInputState(bOn); };
 inline LTRESULT pf_FlipScreen(uint32 flags) { return g_pProxyFunctions->FlipScreen(flags); };
-inline LTRESULT pf_SetRenderMode(RMode* pMode) { SDL_Log("Git here"); return g_pProxyFunctions->SetRenderMode(pMode); };
+inline LTRESULT pf_SetRenderMode(RMode* pMode) { return g_pProxyFunctions->SetRenderMode(pMode); };
