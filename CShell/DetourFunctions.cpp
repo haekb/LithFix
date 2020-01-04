@@ -222,7 +222,7 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 	// HACK: Client is ready here to read in console variables,
 	// so let's do it! 
 	if (m_bFirstRun) {
-		//FirstRun();
+		FirstRun();
 		m_bFirstRun = false;
 	}
 
