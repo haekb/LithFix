@@ -8,8 +8,8 @@ struct Config {
 	// Windowed mode
 	bool bWindowed;
 
-	// Removes some extra padding left on the window.
-	bool bWindowFix;
+	// Determines if windowed mode should be borderless!
+	bool bBorderlessWindow;
 
 
 	// Feature flags -- these can't be changed during gameplay.
@@ -23,7 +23,7 @@ static void InitConfig(Config &config) {
 	config = {
 		60.0f,		// Framerate limiter
 		false,		// Windowed mode
-		true,		// Window fix
+		false,		// Borderless windowed mode
 		// Feature flags, always enabled by default
 		true,		// 
 		true,

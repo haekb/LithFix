@@ -336,3 +336,6 @@ paket-files/
 # Additional
 # Since AVP2 still has a thriving community, don't include those mocked up headers.
 LithTech/AVP2
+
+# Dont include my staging are for releases
+_RELEASE/*

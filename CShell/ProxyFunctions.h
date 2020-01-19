@@ -42,6 +42,8 @@ public:
 
 	void SetMaxFramerate() { if (!m_bLockFramerate) return; m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate); }
 
+	RMode m_RMode;
+
 protected:
 	// Actual variables
 	bool m_bGetBaseMouse;
@@ -62,6 +64,7 @@ protected:
 	LONGLONG m_lFrametime;
 	LARGE_INTEGER m_lTimerFrequency;
 	bool m_bLockFramerate;
+
 private:
 
 };

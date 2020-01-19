@@ -174,12 +174,12 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	m_pLTClient->SetInputState = pf_SetInputState;
 	SDL_Log("-- Hooked SetInputState");
 
-	/*
+	
 	SDL_Log("-- Hooking SetRenderMode Engine: <%p> Detoured: <%p>", m_pLTClient->SetRenderMode, pf_SetRenderMode);
 	g_pProxyFunctions->m_pSetRenderMode = m_pLTClient->SetRenderMode;
 	m_pLTClient->SetRenderMode = pf_SetRenderMode;
 	SDL_Log("-- Hooked SetRenderMode");
-	*/
+	
 #endif
 
 
@@ -218,10 +218,10 @@ void DetourFunctions::FirstRun()
 		g_pProxyFunctions->SetMaxFramerate();
 	}
 
-	auto hWindowFix = m_pLTClient->GetConsoleVar("lf_window_fix");
-	if (hWindowFix) {
-		FloatVar* fWindowFix = (FloatVar*)hWindowFix;
-		g_sConfig.bWindowFix = fWindowFix->value == 0.0f ? false : true;
+	auto hBorderlessWindow = m_pLTClient->GetConsoleVar("lf_borderless_window");
+	if (hBorderlessWindow) {
+		FloatVar* fBorderlessWindow = (FloatVar*)hBorderlessWindow;
+		g_sConfig.bBorderlessWindow = fBorderlessWindow->value == 0.0f ? false : true;
 	}
 
 }
@@ -255,25 +255,26 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 
 	GetClientRect(GetDesktopWindow(), &rect);
 
-	int mX = rect.right / 2;
-	int mY = rect.bottom / 2;
+	int mX = (rect.right - g_pProxyFunctions->m_RMode.m_Width) / 2;
+	int mY = (rect.bottom - g_pProxyFunctions->m_RMode.m_Height) / 2;
+	cx = g_pProxyFunctions->m_RMode.m_Width;
+	cy = g_pProxyFunctions->m_RMode.m_Height;
 
-	mX -= cx / 2;
-	mY -= cy / 2;
+	Uint32 nWindowFlag = 0;
 
-	// Adjust for windowed borders.
-	if (g_sConfig.bWindowFix && m_bWindowedMode) {
-	//	cx -= 16;
-	//	cy -= 39;
+	if (!m_bWindowedMode)
+	{
+		nWindowFlag = SDL_WINDOW_FULLSCREEN;
+	} 
+	else if (g_sConfig.bBorderlessWindow) 
+	{
+		nWindowFlag = SDL_WINDOW_FULLSCREEN_DESKTOP;
 	}
-	
-	SDL_SetWindowFullscreen(g_hSDLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
+	SDL_SetWindowFullscreen(g_hSDLWindow, nWindowFlag);
 	SDL_SetWindowSize(g_hSDLWindow, cx, cy);
 
 	BOOL ret = ((SetWindowPosFn)m_pSetWindowPos)(hWnd, hWndInsertAfter, mX, mY, cx, cy, uFlags);
-
-
 
 	m_bSetWindowPosOngoing = false;
 

@@ -200,7 +200,7 @@ LTRESULT ProxyFunctions::SetRenderMode(RMode* pMode)
 	SDL_Log("SetRenderMode!");
 	auto test = true;
 
+	m_RMode = *pMode;
 	
-
-	return LTRESULT();
+	return m_pSetRenderMode(pMode);
 }
