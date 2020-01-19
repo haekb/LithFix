@@ -21,6 +21,7 @@ typedef float LTFLOAT;
 // This is bad. 
 typedef unsigned long uint32;
 typedef DRESULT LTRESULT;
+typedef DBOOL LTBOOL;
 #else
 // TODO: Make my own headers for Sanity
 #ifdef LITH_SANITY

@@ -42,6 +42,8 @@ ProxyFunctions::ProxyFunctions()
 
 	m_bGetAxisOffsetCalledThisFrame = false;
 	m_fOffsets[0] = m_fOffsets[1] = m_fOffsets[2] = 0;
+
+	SDL_Log("Modernizer special number: %d", g_LithFixIdentifier);
 }
 
 ProxyFunctions::~ProxyFunctions()

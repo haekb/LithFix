@@ -182,12 +182,6 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	
 #endif
 
-
-	//int* t = (int*)0x77327009;
-	//int* o = (int*)*t;
-
-
-
 	IClientShell* pClientShell = ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
 
 	// TODO: Cast to CGameClientShell!
@@ -196,9 +190,6 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 
 
 	m_pLTClient->IsConnected();
-
-
-
 
 	SDL_Log(">> Finished Detoured CreateClientShell");
 
@@ -262,6 +253,7 @@ BOOL DetourFunctions::SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y
 
 	Uint32 nWindowFlag = 0;
 
+	// Handle fullscreen / borderless windowed mode
 	if (!m_bWindowedMode)
 	{
 		nWindowFlag = SDL_WINDOW_FULLSCREEN;
