@@ -26,6 +26,8 @@ ProxyFunctions::ProxyFunctions()
 	// This is the lowest "Scale" in the autoexec.cfg
 	m_fMouseSensitivity = 0.001125f;
 
+	m_bAllowMouse = true;
+
 	m_lNextUpdate = 1L;
 
 	m_bLockFramerate = true;
@@ -38,16 +40,16 @@ ProxyFunctions::ProxyFunctions()
 
 	m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate);
 
-#ifdef LITH_AVP2
 	m_bGetAxisOffsetCalledThisFrame = false;
 	m_fOffsets[0] = m_fOffsets[1] = m_fOffsets[2] = 0;
-#endif
 }
 
 ProxyFunctions::~ProxyFunctions()
 {
 
+
 }
+
 
 void ProxyFunctions::RunConsoleString(char* pString)
 {
@@ -96,7 +98,14 @@ void ProxyFunctions::RunConsoleString(char* pString)
 
 void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 {
-#ifdef LITH_AVP2
+	if (!m_bAllowMouse) {
+		offsets[0] = 0;
+		offsets[1] = 0;
+		offsets[2] = 0;
+
+		return;
+	}
+
 	// AVP2 seems to call GetAxisOffsets twice a frame
 	// so use the cached results for the second call
 	if (m_bGetAxisOffsetCalledThisFrame) {
@@ -107,7 +116,6 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 		
 		return;
 	}
-#endif
 
 	POINT lpPoint;
 	int deltaX = 0, deltaY = 0;
@@ -136,14 +144,20 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 	m_iPreviousMouseX = m_iCurrentMouseX;
 	m_iPreviousMouseY = m_iCurrentMouseY;
 
-#ifdef LITH_AVP2
 	// Cache the results so it can be used again this frame
 	m_fOffsets[0] = offsets[0];
 	m_fOffsets[1] = offsets[1];
 	m_fOffsets[2] = offsets[2];
 
 	m_bGetAxisOffsetCalledThisFrame = true;
-#endif
+}
+
+void ProxyFunctions::SetInputState(LTBOOL bOn)
+{
+	m_bAllowMouse = bOn;
+
+	// Pass the state to the engine too!
+	m_pSetInputState(bOn);
 }
 
 LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
@@ -164,17 +178,26 @@ LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
 		}
 	}
 
-#ifdef LITH_AVP2
 	// Okay we've hit the end of the frame, reset our inputs.
 	m_bGetAxisOffsetCalledThisFrame = false;
-#endif
 
 	return m_pFlipScreen(flags);
 }
+
 
 LTBOOL ProxyFunctions::IsConnected()
 {
 	LTBOOL bIsConnected = m_pIsConnected();
 	SDL_Log("Is Connected? %d", bIsConnected);
 	return bIsConnected;
+}
+
+LTRESULT ProxyFunctions::SetRenderMode(RMode* pMode)
+{
+	SDL_Log("SetRenderMode!");
+	auto test = true;
+
+	
+
+	return LTRESULT();
 }

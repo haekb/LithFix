@@ -73,7 +73,10 @@
 	// effect plugins use to do the interface and client objects for the game.
 	// ------------------------------------------------------------------ //
 
-	class ILTClient : public ILTCSBase
+	class ILTClient 
+//#ifndef LITH_SANITY
+		: public ILTCSBase
+//#endif
 	{
 	friend class CClientMgr;
 
@@ -88,11 +91,17 @@
 		
 	// Access to the other interfaces.
 
+#ifdef LITH_SANITY
+
+		ILTCommon* Common() { return m_pCommonLT; }
+		ILTPhysics* Physics() { return m_pPhysicsLT; }
+
+#else
 		ILTVideoMgr*		VideoMgr()			{return m_pVideoMgr;}
 		ILTTexMod*			GetTexMod()			{return m_pTexMod;}
 		ILTCursor*			Cursor()			{return m_pCursorLT;}
 		ILTDirectMusicMgr*  GetDirectMusicMgr() {return m_pDirectMusicMgr;};
-
+#endif
 	
 	// Connection stuff.
 
@@ -160,6 +169,7 @@
 		LTRESULT	(*StartOptimized2D)();
 		LTRESULT	(*EndOptimized2D)();
 
+#ifndef LITH_SANITY
 		// Change the src/dest blend mode for rendering Optimized2D surfaces  (Defaults to LTSURFACEBLEND_ALPHA)
 		// Note : Drawing a surface w/ a blend mode other than _ALPHA will automatically optimize the surface
 		LTRESULT	(*SetOptimized2DBlend)(LTSurfaceBlend blend);
@@ -168,6 +178,7 @@
 		// Change the color used on Optimized2D surfaces  (i.e. apply a color filter to Optimized2D)
 		LTRESULT	(*SetOptimized2DColor)(HLTCOLOR hColor);
 		LTRESULT	(*GetOptimized2DColor)(HLTCOLOR &hColor);
+#endif
 
 		// Returns LT_OK or LT_NOTINITIALIZED or LT_NOTIN3D.
 		LTRESULT	(*End3D)();
@@ -1124,11 +1135,16 @@
 		LTRESULT (*GetTcpIpAddress)(char* sAddress, uint32 dwBufferSize);
 
 	protected:
-		
+
+#ifdef LITH_SANITY
+		ILTCommon* m_pCommonLT;
+		ILTPhysics* m_pPhysicsLT;
+#else
 		ILTVideoMgr			*m_pVideoMgr;
 		ILTTexMod			*m_pTexMod;
 		ILTCursor			*m_pCursorLT;
 		ILTDirectMusicMgr	*m_pDirectMusicMgr;
+#endif
 	};
 
 
