@@ -10,6 +10,11 @@ extern SDL_Window* g_hSDLWindow;
 extern DetourFunctions* g_pDetourFunctions;
 extern Config g_sConfig;
 
+// Random number!
+static uint32 g_LithFixIdentifier = 869453262;
+static uint32* g_pMissionNumber = NULL;
+static uint32* g_pLevelNumber = NULL;
+
 ProxyFunctions::ProxyFunctions()
 {
 	m_bGetBaseMouse = true;
@@ -41,7 +46,7 @@ ProxyFunctions::ProxyFunctions()
 
 ProxyFunctions::~ProxyFunctions()
 {
-	
+
 }
 
 void ProxyFunctions::RunConsoleString(char* pString)
@@ -165,4 +170,11 @@ LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
 #endif
 
 	return m_pFlipScreen(flags);
+}
+
+LTBOOL ProxyFunctions::IsConnected()
+{
+	LTBOOL bIsConnected = m_pIsConnected();
+	SDL_Log("Is Connected? %d", bIsConnected);
+	return bIsConnected;
 }

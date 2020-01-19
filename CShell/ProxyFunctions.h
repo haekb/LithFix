@@ -16,11 +16,13 @@ public:
 	void RunConsoleString(char* pString);
 	void GetAxisOffsets(LTFLOAT* offsets);
 	LTRESULT FlipScreen(uint32 flags);
+	LTBOOL IsConnected();
 
 	// Original function pointers
 	void     (*m_pRunConsoleString)(char* pString) = NULL;
 	LTRESULT (*m_pFlipScreen)(uint32 flags) = NULL;
 	void	 (*m_pGetAxisOffsets)(LTFLOAT* offsets) = NULL;
+	LTBOOL	 (*m_pIsConnected)() = NULL;	// Are we on a server currently?
 
 	void SetMaxFramerate() { if (!m_bLockFramerate) return; m_lFrametime = (m_lTimerFrequency.QuadPart / g_sConfig.fMaxFramerate); }
 
@@ -55,3 +57,4 @@ extern ProxyFunctions* g_pProxyFunctions;
 inline void pf_RunConsoleString(char* pString) { g_pProxyFunctions->RunConsoleString(pString); };
 inline void pf_GetAxisOffsets(LTFLOAT* offsets) { g_pProxyFunctions->GetAxisOffsets(offsets); };
 inline LTRESULT pf_FlipScreen(uint32 flags) { return g_pProxyFunctions->FlipScreen(flags); };
+inline LTBOOL pf_IsConnected() { return g_pProxyFunctions->IsConnected(); };

@@ -5,6 +5,8 @@
 #include "ProxyFunctions.h"
 
 
+
+
 extern SDL_Window* g_hSDLWindow;
 extern Config g_sConfig;
 
@@ -84,6 +86,12 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	m_pLTClient->FlipScreen = pf_FlipScreen;
 	SDL_Log("-- Hooked FlipScreen");
 
+
+	SDL_Log("-- Hooking IsConnected Engine: <%p> Detoured: <%p>", m_pLTClient->IsConnected, pf_IsConnected);
+	g_pProxyFunctions->m_pIsConnected = m_pLTClient->IsConnected;
+	m_pLTClient->IsConnected = pf_IsConnected;
+	SDL_Log("-- Hooked IsConnected");
+
 	SDL_Log(">> Finished Detoured CreateClientShell");
 
 	IClientShell* pClientShell = ((CreateClientShellFn)m_pCreateClientShell)(pClientDE);
@@ -92,8 +100,7 @@ IClientShell* DetourFunctions::CreateClientShell(ILTClient* pClientDE)
 	//m_pClientShell = (CGameClientShell)pClientShell;
 	m_pClientShell = pClientShell;
 
-
-
+	m_pLTClient->IsConnected();
 
 	return pClientShell;
 }
