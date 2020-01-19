@@ -82,8 +82,6 @@ void ProxyFunctions::RunConsoleString(char* pString)
 		if (std::regex_search(search, match, commandRegex))
 		{
 			result = match[0].first._Ptr;
-
-			//search = match.suffix().str();
 		}
 
 		if (!result.empty()) {
@@ -135,13 +133,19 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 	m_iCurrentMouseX += deltaX;
 	m_iCurrentMouseY += deltaY;
 
-	float nScale = m_fMouseSensitivity + (1.0f * m_fMouseSensitivity);
+	float nScaleX = m_fMouseSensitivity + (1.0f * m_fMouseSensitivity);
 
 	// Nerf the sensitivity scale so it matches the OG games.
-	nScale *= 0.10f;
+	nScaleX *= 0.10f;
+	float nScaleY = nScaleX;
 
-	offsets[0] = (float)(m_iCurrentMouseX - m_iPreviousMouseX) * nScale;
-	offsets[1] = (float)(m_iCurrentMouseY - m_iPreviousMouseY) * (nScale*2);
+	// AVP2 has some weird mouse stuff going on
+#ifdef LITH_AVP2
+	nScaleY *= 2;
+#endif
+
+	offsets[0] = (float)(m_iCurrentMouseX - m_iPreviousMouseX) * nScaleX;
+	offsets[1] = (float)(m_iCurrentMouseY - m_iPreviousMouseY) * (nScaleY);
 	offsets[2] = 0.0f;
 
 	m_iPreviousMouseX = m_iCurrentMouseX;
@@ -165,7 +169,6 @@ void ProxyFunctions::SetInputState(LTBOOL bOn)
 
 LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
 {
-
 	if (m_bLockFramerate) {
 		// Limit our framerate so the game actually runs properly.
 		LARGE_INTEGER NewTime;
@@ -191,15 +194,11 @@ LTRESULT ProxyFunctions::FlipScreen(uint32 flags)
 LTBOOL ProxyFunctions::IsConnected()
 {
 	LTBOOL bIsConnected = m_pIsConnected();
-	SDL_Log("Is Connected? %d", bIsConnected);
 	return bIsConnected;
 }
 
 LTRESULT ProxyFunctions::SetRenderMode(RMode* pMode)
 {
-	SDL_Log("SetRenderMode!");
-	auto test = true;
-
 	m_RMode = *pMode;
 	
 	return m_pSetRenderMode(pMode);
