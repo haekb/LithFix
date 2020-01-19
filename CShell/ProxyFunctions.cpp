@@ -137,6 +137,9 @@ void ProxyFunctions::GetAxisOffsets(LTFLOAT* offsets)
 
 	float nScale = m_fMouseSensitivity + (1.0f * m_fMouseSensitivity);
 
+	// Nerf the sensitivity scale so it matches the OG games.
+	nScale *= 0.10f;
+
 	offsets[0] = (float)(m_iCurrentMouseX - m_iPreviousMouseX) * nScale;
 	offsets[1] = (float)(m_iCurrentMouseY - m_iPreviousMouseY) * (nScale*2);
 	offsets[2] = 0.0f;
