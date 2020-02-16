@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CShell", "CShell\CShell.vcx
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug - AVP2|x64 = Debug - AVP2|x64
+		Debug - AVP2|x86 = Debug - AVP2|x86
 		Debug - AVP2PH|x64 = Debug - AVP2PH|x64
 		Debug - AVP2PH|x86 = Debug - AVP2PH|x86
 		Debug - NOLF|x64 = Debug - NOLF|x64
@@ -25,6 +27,10 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2|x64.ActiveCfg = Debug - AVP2|x64
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2|x64.Build.0 = Debug - AVP2|x64
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2|x86.ActiveCfg = Debug - AVP2|Win32
+		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2|x86.Build.0 = Debug - AVP2|Win32
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2PH|x64.ActiveCfg = Debug - AVP2PH|x64
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2PH|x64.Build.0 = Debug - AVP2PH|x64
 		{C1ADEBF2-6626-469E-AFF4-524A1A70CB1F}.Debug - AVP2PH|x86.ActiveCfg = Debug - AVP2PH|Win32
