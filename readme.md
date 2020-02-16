@@ -1,4 +1,4 @@
-# LithFix Beta 1
+# LithFix Beta 2
 
 This is a beta version of lithfix. This is intended as a global fix for various aging issues in LithTech engine games. Currently releases are made for individual games.
 
